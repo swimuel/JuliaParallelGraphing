@@ -1,0 +1,6 @@
+authors = ["william "]
+name = "ParallelGraphing"
+uuid = "45530112-63ec-11e9-3a93-493d6aa81c83"
+version = "0.1.0"
+
+[deps]
