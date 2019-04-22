@@ -46,7 +46,8 @@ end
 function prims_parallel(graph)
 	if !is_connected(graph)
 		throw("Graph not connected")
-
+	end
+	
 	matrix = graph_to_matrix(graph)
 	#from the matrix, we shall do prims 
 	
