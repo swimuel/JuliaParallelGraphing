@@ -159,13 +159,15 @@ function prims_parallel(graph)
 		#add picked vertex to the MST
 		mstSet[min_index] = true		
 
-		#update the sources and keys array. made parallel
-		Threads.@threads for i in 1:nv(graph)
+		
+		#update the sources and keys array. can be made parallel but is somehow slower. 
+		for i in 1:nv(graph)
 			if matrix[min_index,i]!=0 && mstSet[i] == false && matrix[min_index,i] < key[i]
 				parent[i] = min_index
 				key[i] = matrix[min_index,i]
 			end			
-		end		
+		end
+
 	end 
 	graph = construct_graph(parent,matrix)
 	return graph
