@@ -99,6 +99,7 @@ function prims_sequential(graph)
 				min_index = v 
 			end
 		end
+
 		#add picked vertex to the MST
 		mstSet[min_index] = true	
 
@@ -140,17 +141,21 @@ function prims_parallel(graph)
 
 	for vertex in 1:nv(graph)
 		#pick minimum key vertex from set of vertices not in mst
-		min = Inf
-		min_index = -1
+		min_reduction_array = zeros(Threads.nthreads())
+		fill!(min_reduction_array,Inf)
 
-		#TODO make parallel with a critical path instead of reduction 
+		index_array = zeros(Threads.nthreads())
+		fill!(index_array,-1)
+
 		Threads.@threads for v in 1:nv(graph)
-			if mstSet[v] ==false && key[v] < min
-				min = key[v] #Fairly sure this has to made thread safe.
-				min_index= v 
+			if mstSet[v] ==false && key[v] < min_reduction_array[Threads.threadid()]
+				min_reduction_array[Threads.threadid()] = key[v] #Each thread will write it's max and then it will be reduced manually 
+				index_array[Threads.threadid()] = v
 			end
 		end
-		
+
+		min_index = trunc(Int,index_array[argmin(min_reduction_array)])
+				
 		#add picked vertex to the MST
 		mstSet[min_index] = true		
 
