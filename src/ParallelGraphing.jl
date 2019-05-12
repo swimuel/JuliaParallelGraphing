@@ -12,8 +12,9 @@ export prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkst
 
 
 #=helper function to create a connected SimpleWeightedGraph
+	May remove and use the preset ones?
 	=#
-function make_Simple_Weighted_Graph(size)
+function make_simple_weighted_graph(size)
 	g = SimpleWeightedGraph(size)
 	for i in 2:size
 		add_edge!(g,i-1,i,1)
