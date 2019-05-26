@@ -29,14 +29,14 @@ function make_simple_weighted_graph(size)
 		if !has_edge(g,source,destination) && source!=destination
 			add_edge!(g,source,destination,rand(2:100))
 		end
-	
+
 	end
-	return g 
+	return g
 end
 
 #Make a dictionary of graphs as a testbed
 #Load using loadgraph("graph{number}",SWGFormat())
-#Must be using simple weighed graph 
+#Must be using simple weighed graph
 
 function create_test_graphs()
 	for i in 1:20
@@ -48,13 +48,13 @@ end
 function benchmark()
 	for i in 1:20
 		g = loadgraph(string("graph",i,".lg"),SWGFormat())
-		@time prims_sequential(g) 
+		@time prims_sequential(g)
 	end
 end
 
 
 #=helper function that takes a SimpleWeightedGraph and outputs an
-	adjacency matrix. Made parallel with a parallel for loop. 
+	adjacency matrix. Made parallel with a parallel for loop.
 	inputs: @graph: SimpleWeightedGraph type input graph
 	outputs: @out_matrix: Adjacency matrix
 =#
@@ -68,9 +68,9 @@ function graph_to_matrix(graph)
 			else
 				output_matrix[source,destination] = 0
 			end
-		end			
+		end
 	end
-	return output_matrix			
+	return output_matrix
 end
 
 
@@ -98,12 +98,12 @@ function prims_sequential(graph)
 	end
 
 	matrix = graph_to_matrix(graph)
-	#from the matrix, we shall do prims 
-	
+	#from the matrix, we shall do prims
+
 	parent = [] #Sources array
 	key = [] #Weights array
 	mstSet = [] #Whether or not element is in the minimum spanning tree
-	
+
 	#initialize the array
 	for i in 1:nv(graph)
 		push!(key,Inf)
@@ -117,26 +117,26 @@ function prims_sequential(graph)
 	for vertex in 1:nv(graph)
 		#pick minimum key vertex from set of vertices not in mst
 		min = Inf
-		min_index = -1		
-		
+		min_index = -1
+
 		for v in 1:nv(graph)
 			if mstSet[v] ==false && key[v] < min
 				min = key[v]
-				min_index = v 
+				min_index = v
 			end
 		end
 
 		#add picked vertex to the MST
-		mstSet[min_index] = true	
+		mstSet[min_index] = true
 
 		#update the sources and keys array
 		for i in 1:nv(graph)
 			if matrix[min_index,i]!=0 && mstSet[i] == false && matrix[min_index,i] < key[i]
 				parent[i] = min_index
 				key[i] = matrix[min_index,i]
-			end			
+			end
 		end
-	end 
+	end
 	return [Edge{Int64}(parent[v],v) for v in vertices(graph) if parent[v] != 0]
 end
 
@@ -150,12 +150,12 @@ function prims_parallel(graph)
 	end
 
 	matrix = graph_to_matrix(graph)
-	#from the matrix, we shall do prims 
-	
+	#from the matrix, we shall do prims
+
 	parent = [] #Sources array
 	key = [] #Weights array
 	mstSet = [] #Whether or not element is in the minimum spanning tree
-	
+
 	#initialize the array
 	for i in 1:nv(graph)
 		push!(key,Inf)
@@ -176,32 +176,32 @@ function prims_parallel(graph)
 
 		Threads.@threads for v in 1:nv(graph)
 			if mstSet[v] ==false && key[v] < min_reduction_array[Threads.threadid()]
-				min_reduction_array[Threads.threadid()] = key[v] #Each thread will write it's max and then it will be reduced manually 
+				min_reduction_array[Threads.threadid()] = key[v] #Each thread will write it's max and then it will be reduced manually
 				index_array[Threads.threadid()] = v
 			end
 		end
 		min_index = trunc(Int,index_array[argmin(min_reduction_array)])
-				
+
 		#add picked vertex to the MST
 		mstSet[min_index] = true
 
-		
-		#update the sources and keys array. can be made parallel but is somehow slower. 
+
+		#update the sources and keys array. can be made parallel but is somehow slower.
 		for i in 1:nv(graph)
 			if matrix[min_index,i]!=0 && mstSet[i] == false && matrix[min_index,i] < key[i]
 				parent[i] = min_index
 				key[i] = matrix[min_index,i]
-			end			
+			end
 		end
 
-	end 
+	end
 	return [Edge{Int64}(parent[v],v) for v in vertices(graph) if parent[v] != 0]
 end
 
 
 #=dijkstra for a single node
 	helper method for all_sources
-	takes an adjancency matrix and the source with which is being searched from and returns an array of shortest distances 
+	takes an adjancency matrix and the source with which is being searched from and returns an array of shortest distances
 	=#
 function dijk_single(matrix, src)
 
@@ -213,21 +213,21 @@ function dijk_single(matrix, src)
 
 	dist[src] = 0
 	for i in 1:size(matrix,1)
-		
+
 		min = Inf
 		min_index = -1
 
 		#find minimum distance node
 		for i in 1:size(matrix,1)
-			if !shortest_path[i] && dist[i] < min 
+			if !shortest_path[i] && dist[i] < min
 				min = dist[i]
-				min_index = i 
+				min_index = i
 			end
 		end
 
 		shortest_path[min_index] = true
-		
-		#update distances 
+
+		#update distances
 		for i in 1:size(matrix,1)
 			if !shortest_path[i] && matrix[min_index,i] != 0 && dist[min_index] != Inf && dist[i] > dist[min_index] + matrix[min_index,i]
 				dist[i] =dist[min_index] + matrix[min_index,i]
@@ -238,7 +238,7 @@ function dijk_single(matrix, src)
 end
 
 #=dijkstra algorthim to find the shortest path from all nodes to all nodes
-inputs: @graph SimmpleWeightedGraph, has to be connected 
+inputs: @graph SimmpleWeightedGraph, has to be connected
 output: Array containing arrays of shortest distances for each node in the graph
 =#
 function dijkstra_all_sources_sequential(graph)
@@ -246,7 +246,7 @@ function dijkstra_all_sources_sequential(graph)
 		throw("Graph not connected")
 	end
 	matrix = graph_to_matrix(graph)
-	#from the matrix, we shall do dijkstra 
+	#from the matrix, we shall do dijkstra
 
 	weight_matrix = Array{Any}(undef,size(matrix,1)) #matrix that will contain all shortest_paths
 
@@ -257,7 +257,7 @@ function dijkstra_all_sources_sequential(graph)
 end
 
 #=dijkstra algorthim to find the shortest path from all nodes to all nodes
-inputs: @graph SimmpleWeightedGraph, has to be connected 
+inputs: @graph SimmpleWeightedGraph, has to be connected
 output: Array containing arrays of shortest distances for each node in the graph
 
 Uses threads and the number of threads has to be set before julia starts up
@@ -293,7 +293,7 @@ function prims_priority_queue_sequential(graph)
 
 	while !isempty(priority_queue)
 		v = dequeue!(priority_queue) #Take the smallest nearest node
-		finished[v] = true #this node is now done  
+		finished[v] = true #this node is now done
 
 		#update step
 		for u in neighbors(graph,v)
