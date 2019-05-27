@@ -1,9 +1,10 @@
 name = "ParallelGraphing"
 uuid = "45530112-63ec-11e9-3a93-493d6aa81c83"
-authors = ["william "]
+authors = ["william", "alexander", "sam"]
 version = "0.1.0"
 
 [deps]
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
 SharedArrays = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
