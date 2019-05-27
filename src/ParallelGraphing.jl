@@ -41,7 +41,8 @@ function make_simple_weighted_graph(size)
 	return g
 end
 
-function plot(graph, size)
+function plot(graph)
+	size = nv(graph)
 	Plots.display(graphplot(graph,marker = (:rect),markersize = 1.5,linecolor = :red, names = 1:size))
 end
 #Make a dictionary of graphs as a testbed
