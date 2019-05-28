@@ -9,6 +9,8 @@ import DataStructures
 import Plots
 import GraphRecipes
 import Colors
+import BenchmarkTools
+import Statistics
 
 using LightGraphs
 using SimpleWeightedGraphs
@@ -17,6 +19,8 @@ using DataStructures
 using GraphRecipes
 using Plots
 using Colors
+using BenchmarkTools
+using Statistics
 
 export prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkstra_all_sources_parallel, prims_priority_queue_sequential
 
@@ -318,6 +322,17 @@ function prims_priority_queue_sequential(graph)
 	end
 
 	return [Edge{Int64}(parents[v],v) for v in vertices(graph) if parents[v] != 0] #Rerig this to include weights
+end
+
+function benchmark_graph(graph)
+	result = @benchmark prims_sequential($graph) samples=10 seconds=120 evals=1
+	#dump(result)
+	println("min: ", minimum(result.times) / 1000, "μs")
+	println("median: ", median(result.times) / 1000, "μs")
+	println("mean: ", mean(result.times) / 1000, "μs")
+	println("max: ", maximum(result.times) / 1000, "μs")
+	println("total time: ", sum(result.times) / 1000, "μs")
+	println("total samples: ", length(result.times))
 end
 
 end # module
