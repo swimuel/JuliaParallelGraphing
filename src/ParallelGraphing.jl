@@ -22,34 +22,35 @@ using Colors
 using BenchmarkTools
 using Statistics
 
-export prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkstra_all_sources_parallel, prims_priority_queue_sequential
+export prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkstra_all_sources_parallel, prims_priority_queue_sequential, plot 
 
 
-#=helper function to create a connected SimpleWeightedGraph
+#=helper function to create a SimpleWeightedGraph, graph is randomly made. 
 	=#
 function make_simple_weighted_graph(size)
 	g = SimpleWeightedGraph(size)
 	for i in 2:size
-		add_edge!(g,i-1,i,1)
-
+		add_edge!(g,i-1,i,rand(1:10))
 
 		#generate some random junk edges
 		source = rand(1:i)
 		destination = rand(1:i)
 		if !has_edge(g,source,destination) && source!=destination
-			add_edge!(g,source,destination,rand(2:100))
+			add_edge!(g,source,destination,rand(1:10))
 		end
-
 	end
 	# plot(g,size)
 	return g
 end
 
+
 function plot(graph)
 	size = nv(graph)
 	Plots.display(graphplot(graph,marker = (:rect),markersize = 1.5,linecolor = :red, names = 1:size))
 end
-#Make a dictionary of graphs as a testbed
+
+
+#Make a 20 of graphs as a testbed
 #Load using loadgraph("graph{number}",SWGFormat())
 #Must be using simple weighed graph
 
@@ -58,18 +59,11 @@ function create_test_graphs()
 		g  = make_simple_weighted_graph(i*100)
 		savegraph(string("graph",i,".lg"),g)
 	end
-end
 
-function benchmark()
-	for i in 1:20
-		g = loadgraph(string("graph",i,".lg"),SWGFormat())
-		@time prims_sequential(g)
-	end
 end
-
 
 #=helper function that takes a SimpleWeightedGraph and outputs an
-	adjacency matrix. Made parallel with a parallel for loop.
+	adjacency matrix.
 	inputs: @graph: SimpleWeightedGraph type input graph
 	outputs: @out_matrix: Adjacency matrix
 =#
@@ -89,7 +83,8 @@ function graph_to_matrix(graph)
 end
 
 
-#helper function to construct a graph once the parents have been found for prims
+#helper function to construct a graph once the parents have been found for prims, takes in the original matrix 
+#and an array of the parents of each node. 
 function construct_graph(parent,matrix)
 	source = Int64[]
 	destination = Int64[]
@@ -105,7 +100,7 @@ end
 
 #=Sequential Variant of the prims algorithm to find the minimum spanning tree
 inputs: @graph: SimpleWeightedGraph input, has to be connected
-#SLOW VERSION
+
 =#
 function prims_sequential(graph)
 	if !is_connected(graph)
@@ -152,12 +147,13 @@ function prims_sequential(graph)
 			end
 		end
 	end
-	return [Edge{Int64}(parent[v],v) for v in vertices(graph) if parent[v] != 0]
+	#format the output
+	graph = construct_graph(parent,matrix)
+	return graph
 end
 
 
 #parallelized Variant of the prims algorithms, uses the Threads.@threads construct
-#SLOW VERSION
 
 function prims_parallel(graph)
 	if !is_connected(graph)
@@ -200,7 +196,6 @@ function prims_parallel(graph)
 		#add picked vertex to the MST
 		mstSet[min_index] = true
 
-
 		#update the sources and keys array. can be made parallel but is somehow slower.
 		for i in 1:nv(graph)
 			if matrix[min_index,i]!=0 && mstSet[i] == false && matrix[min_index,i] < key[i]
@@ -210,7 +205,8 @@ function prims_parallel(graph)
 		end
 
 	end
-	return [Edge{Int64}(parent[v],v) for v in vertices(graph) if parent[v] != 0]
+	graph = construct_graph(parent,matrix)
+	return graph
 end
 
 
@@ -293,6 +289,7 @@ function dijkstra_all_sources_parallel(graph)
 end
 
 
+#Priority queue version of prims to serve as a comparison
 function prims_priority_queue_sequential(graph)
 	num_vertices=nv(graph)
 	dist_matrix= weights(graph)
@@ -320,8 +317,8 @@ function prims_priority_queue_sequential(graph)
 			end
 		end
 	end
-
-	return [Edge{Int64}(parents[v],v) for v in vertices(graph) if parents[v] != 0] #Rerig this to include weights
+	graph = construct_graph(parent,matrix)
+	return graph
 end
 
 function benchmark_graph(graph)
