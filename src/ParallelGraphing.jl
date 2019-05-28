@@ -22,10 +22,10 @@ using Colors
 using BenchmarkTools
 using Statistics
 
-export prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkstra_all_sources_parallel, prims_priority_queue_sequential, plot 
+export prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkstra_all_sources_parallel, prims_priority_queue_sequential, plot
 
 
-#=helper function to create a SimpleWeightedGraph, graph is randomly made. 
+#=helper function to create a SimpleWeightedGraph, graph is randomly made.
 	=#
 function make_simple_weighted_graph(size)
 	g = SimpleWeightedGraph(size)
@@ -49,6 +49,16 @@ function plot(graph)
 	Plots.display(graphplot(graph,marker = (:rect),markersize = 1.5,linecolor = :red, names = 1:size))
 end
 
+function benchmark(graph)
+	result = @benchmark prims_sequential($graph) samples=10 seconds=120 evals=1
+	#dump(result)
+	println("min: ", minimum(result.times) / 1000, "μs")
+	println("median: ", median(result.times) / 1000, "μs")
+	println("mean: ", mean(result.times) / 1000, "μs")
+	println("max: ", maximum(result.times) / 1000, "μs")
+	println("total time: ", sum(result.times) / 1000, "μs")
+	println("total samples: ", length(result.times))
+end
 
 #Make a 20 of graphs as a testbed
 #Load using loadgraph("graph{number}",SWGFormat())
@@ -83,8 +93,8 @@ function graph_to_matrix(graph)
 end
 
 
-#helper function to construct a graph once the parents have been found for prims, takes in the original matrix 
-#and an array of the parents of each node. 
+#helper function to construct a graph once the parents have been found for prims, takes in the original matrix
+#and an array of the parents of each node.
 function construct_graph(parent,matrix)
 	source = Int64[]
 	destination = Int64[]
@@ -319,17 +329,6 @@ function prims_priority_queue_sequential(graph)
 	end
 	graph = construct_graph(parent,matrix)
 	return graph
-end
-
-function benchmark_graph(graph)
-	result = @benchmark prims_sequential($graph) samples=10 seconds=120 evals=1
-	#dump(result)
-	println("min: ", minimum(result.times) / 1000, "μs")
-	println("median: ", median(result.times) / 1000, "μs")
-	println("mean: ", mean(result.times) / 1000, "μs")
-	println("max: ", maximum(result.times) / 1000, "μs")
-	println("total time: ", sum(result.times) / 1000, "μs")
-	println("total samples: ", length(result.times))
 end
 
 end # module
