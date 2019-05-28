@@ -6,11 +6,17 @@ module ParallelGraphing
 import LightGraphs
 import SimpleWeightedGraphs
 import DataStructures
+import Plots
+import GraphRecipes
+import Colors
 
 using LightGraphs
 using SimpleWeightedGraphs
 using Distributed
 using DataStructures
+using GraphRecipes
+using Plots
+using Colors
 
 export prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkstra_all_sources_parallel, prims_priority_queue_sequential
 
@@ -31,9 +37,14 @@ function make_simple_weighted_graph(size)
 		end
 
 	end
+	# plot(g,size)
 	return g
 end
 
+function plot(graph)
+	size = nv(graph)
+	Plots.display(graphplot(graph,marker = (:rect),markersize = 1.5,linecolor = :red, names = 1:size))
+end
 #Make a dictionary of graphs as a testbed
 #Load using loadgraph("graph{number}",SWGFormat())
 #Must be using simple weighed graph
