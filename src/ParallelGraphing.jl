@@ -10,7 +10,6 @@ import Plots
 import GraphRecipes
 import Colors
 import BenchmarkTools
-import Statistics
 
 using LightGraphs
 using SimpleWeightedGraphs
@@ -20,7 +19,6 @@ using GraphRecipes
 using Plots
 using Colors
 using BenchmarkTools
-using Statistics
 
 export prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkstra_all_sources_parallel, prims_priority_queue_sequential, plot
 
@@ -49,17 +47,28 @@ function plot(graph)
 	Plots.display(graphplot(graph,marker = (:rect),markersize = 1.5,linecolor = :red, names = 1:size))
 end
 
-function benchmark(graph)
-	result = @benchmark prims_sequential($graph) samples=10 seconds=120 evals=1
+function benchmark(graph, x)
+	if x == 1
+		println("running prims in parallel")
+		display_benchmark_results(@benchmark prims_parallel($graph) samples=10 seconds=120 evals=1)
+	elseif x == 2
+		println("running prims sequentially")
+		display_benchmark_results(@benchmark prims_sequential($graph) samples=10 seconds=120 evals=1)
+	else
+		println("invalid algorithm")
+	end
 	#dump(result)
-	println("min: ", minimum(result.times) / 1000, "μs")
-	println("median: ", median(result.times) / 1000, "μs")
-	println("mean: ", mean(result.times) / 1000, "μs")
-	println("max: ", maximum(result.times) / 1000, "μs")
+
+end
+
+function display_benchmark_results(result)
+	println("min: ", minimum(result))
+	println("median: ", median(result))
+	println("mean: ", mean(result))
+	println("max: ", maximum(result))
 	println("total time: ", sum(result.times) / 1000, "μs")
 	println("total samples: ", length(result.times))
 end
-
 #Make a 20 of graphs as a testbed
 #Load using loadgraph("graph{number}",SWGFormat())
 #Must be using simple weighed graph
