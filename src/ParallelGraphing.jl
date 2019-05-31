@@ -105,8 +105,8 @@ end
 #threadsafe queue data storage
 struct ThreadQueue{T,N<:Integer}
     data::Vector{T}
-    head::Atomic{N} #Index of the head
-    tail::Atomic{N} #Index of the tail
+    head::Threads.Atomic{N} #Index of the head
+    tail::Threads.Atomic{N} #Index of the tail
 end
 
 
@@ -138,10 +138,10 @@ end
 function bfs_parallel_main(
         next::ThreadQueue,
         g::SimpleWeightedGraph,
-        parents::Array{Atomic{T}},
+        parents::Array{Threads.Atomic{T}},
         level::Array{T}
     ) where T <: Integer
-    @threads for src in level
+    Threads.@threads for src in level
         vertexneighbors = neighbors(g, src)
         for vertex in vertexneighbors
             parent = atomic_cas!(parents[vertex], zero(T), src)
@@ -157,7 +157,7 @@ function bfs_parallel!(
         next::ThreadQueue,
         g::SimpleWeightedGraph,
         source::T,
-        parents::Array{Atomic{T}}
+        parents::Array{Threads.Atomic{T}}
     ) where T<:Integer
     parents[source][] = source
     push!(next, source)
@@ -225,9 +225,9 @@ function construct_graph(parent,matrix)
 	destination = Int64[]
 	weights = Float64[]
 	for i in 2:length(parent)
-		push!(source,parent[i])
-		push!(destination,i)
-		push!(weights,matrix[i,parent[i]])
+		Base.push!(source,parent[i])
+		Base.push!(destination,i)
+		Base.push!(weights,matrix[i,parent[i]])
 	end
 	return SimpleWeightedGraph(source,destination,weights)
 end
@@ -251,9 +251,9 @@ function prims_sequential(graph)
 
 	#initialize the array
 	for i in 1:nv(graph)
-		push!(key,Inf)
-		push!(mstSet,false)
-		push!(parent,0)
+		Base.push!(key,Inf)
+		Base.push!(mstSet,false)
+		Base.push!(parent,0)
 	end
 
 	key[1] = 0
@@ -304,9 +304,9 @@ function prims_parallel(graph)
 
 	#initialize the array
 	for i in 1:nv(graph)
-		push!(key,Inf)
-		push!(mstSet,false)
-		push!(parent,0)
+		Base.push!(key,Inf)
+		Base.push!(mstSet,false)
+		Base.push!(parent,0)
 	end
 
 	key[1] = 0
@@ -424,36 +424,5 @@ function dijkstra_all_sources_parallel(graph)
 end
 
 
-#Priority queue version of prims to serve as a comparison
-function prims_priority_queue_sequential(graph)
-	num_vertices=nv(graph)
-	dist_matrix= weights(graph)
-
-	priority_queue = PriorityQueue{Int64,Float64}() #priority_queue to find min
-
-	finished = zeros(Bool,num_vertices) #has the node been visited
-	wt = fill(Inf,num_vertices) #distance matrix
-	parents = zeros(Int64,num_vertices)
-
-	priority_queue[1] = 0
-	wt[1] = 0
-
-	while !isempty(priority_queue)
-		v = dequeue!(priority_queue) #Take the smallest nearest node
-		finished[v] = true #this node is now done
-
-		#update step
-		for u in neighbors(graph,v)
-			finished[u] && continue
-			if wt[u] > dist_matrix[u,v]
-				wt[u] = dist_matrix[u,v]
-				priority_queue[u] = wt[u] #Edges are reranked
-				parents[u] = v
-			end
-		end
-	end
-	graph = construct_graph(parent,matrix)
-	return graph
-end
 
 end # module
