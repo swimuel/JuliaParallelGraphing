@@ -15,3 +15,10 @@ if you're developing you probably want to use revise before you start making cha
 1. `Julia> using Revise`
 1. `1.0>dev SE751-Assignment`
 1. `Julia>using ParallelGraphing`
+
+
+
+Adding a package
+1. navigate inside the SE751-Assignment folder
+1. in package manager: `activate .`
+1. add package you want to add
