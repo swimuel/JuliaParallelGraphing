@@ -22,3 +22,9 @@ Adding a package
 1. navigate inside the SE751-Assignment folder
 1. in package manager: `activate .`
 1. add package you want to add
+
+
+Loading a graph
+1. `using LightGraphs`
+1. `using SimpleWeightedGraphs`
+1. `g = LightGraphs.loadgraph("src\\graphs\\ConnectedGraph10.lg", SWGFormat())` (or other name)
