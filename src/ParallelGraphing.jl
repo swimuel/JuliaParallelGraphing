@@ -19,6 +19,7 @@ using GraphRecipes
 using Plots
 using Colors
 using BenchmarkTools
+using Base.Threads: @threads, nthreads, Atomic, atomic_add!, atomic_cas!
 
 export bfs_parallel, bfs_sequential ,prims_sequential, prims_parallel, dijkstra_all_sources_sequential, dijkstra_all_sources_parallel, prims_priority_queue_sequential, plot
 
