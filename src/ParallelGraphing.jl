@@ -10,6 +10,7 @@ import Plots
 import GraphRecipes
 import Colors
 import BenchmarkTools
+import Base.push!
 
 using LightGraphs
 using SimpleWeightedGraphs
