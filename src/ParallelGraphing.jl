@@ -65,8 +65,8 @@ end
 
 function display_benchmark_results(result)
 	println("min: ", minimum(result))
-	println("median: ", median(result))
-	println("mean: ", mean(result))
+	println("median: ", BenchmarkTools.median(result))
+	println("mean: ", BenchmarkTools.mean(result))
 	println("max: ", maximum(result))
 	println("total time: ", sum(result.times) / 1000, "μs")
 	println("total samples: ", length(result.times))
