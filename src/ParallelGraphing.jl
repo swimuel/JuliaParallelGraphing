@@ -56,22 +56,33 @@ function plot(graph)
 	Plots.display(graphplot(graph,marker = (:rect),markersize = 1.5,linecolor = :red, names = 1:size))
 end
 
-function benchmark(graph, x)
-	if x == 1
+function auto_benchmark(alg)
+	for i in 1:20
+		g = LightGraphs.loadgraph(string("src\\graphs\\graph",i,".lg"), SWGFormat())
+		println(string("Benchmarking Graph ",i))
+		benchmark(g, alg)
+	end
+end
+
+function benchmark(graph, alg)
+	if alg == 1
 		println("running prims in parallel")
 		para = @benchmark prims_parallel($graph) samples=10 seconds=120 evals=1
 		println("running prims sequentially")
 		seq = @benchmark prims_sequential($graph) samples=10 seconds=120 evals=1
 		display_benchmark_results(para,seq)
-	elseif x == 2
+	elseif alg == 2
 		println("running dijkstra in parallel")
 		para = @benchmark dijkstra_all_sources_parallel($graph) samples=10 seconds=120 evals=1
 		println("running dijkstra sequentially")
 		seq = @benchmark dijkstra_all_sources_sequential($graph) samples=10 seconds=120 evals=1
 		display_benchmark_results(para, seq)
-	elseif x == 3
-		println("running prims sequentially")
-		display_benchmark_results(@benchmark prims_sequential($graph) samples=10 seconds=120 evals=1)
+	elseif alg == 3
+		println("running BFS in parallel")
+		para = @benchmark bfs_parallel($graph, 1) samples=10 seconds=120 evals=1
+		println("running BFS sequentially")
+		seq = @benchmark bfs_sequential($graph, 1) samples=10 seconds=120 evals=1
+		display_benchmark_results(para, seq)
 	else
 		println("invalid algorithm")
 	end
