@@ -61,26 +61,30 @@ function auto_benchmark(alg)
 		g = LightGraphs.loadgraph(string("src\\graphs\\graph",i,".lg"), SWGFormat())
 		println(string("Benchmarking Graph ",i))
 		benchmark(g, alg)
+		println()
+	end
+end
+
+function auto_connected_benchmark(alg)
+	for i in 21:30
+		g = LightGraphs.loadgraph(string("src\\graphs\\graph",i,".lg"), SWGFormat())
+		println(string("Benchmarking Graph ",i))
+		benchmark(g, alg)
+		println()
 	end
 end
 
 function benchmark(graph, alg)
 	if alg == 1
-		println("running prims in parallel")
 		para = @benchmark prims_parallel($graph) samples=10 seconds=120 evals=1
-		println("running prims sequentially")
 		seq = @benchmark prims_sequential($graph) samples=10 seconds=120 evals=1
 		display_benchmark_results(para,seq)
 	elseif alg == 2
-		println("running dijkstra in parallel")
 		para = @benchmark dijkstra_all_sources_parallel($graph) samples=10 seconds=120 evals=1
-		println("running dijkstra sequentially")
 		seq = @benchmark dijkstra_all_sources_sequential($graph) samples=10 seconds=120 evals=1
 		display_benchmark_results(para, seq)
 	elseif alg == 3
-		println("running BFS in parallel")
 		para = @benchmark bfs_parallel($graph, 1) samples=10 seconds=120 evals=1
-		println("running BFS sequentially")
 		seq = @benchmark bfs_sequential($graph, 1) samples=10 seconds=120 evals=1
 		display_benchmark_results(para, seq)
 	else
@@ -91,11 +95,8 @@ function benchmark(graph, alg)
 end
 
 function display_benchmark_results(para, seq)
-	println("minimum:    parallel: ", minimum(para.times), " sequential: ", minimum(seq.times))
-	println("median:     parallel: ", BenchmarkTools.median(para.times), " sequential: ", BenchmarkTools.median(seq.times))
-	println("mean:       parallel: ", BenchmarkTools.mean(para.times), " sequential: ", BenchmarkTools.mean(seq.times))
-	println("maximum:    parallel: ", maximum(para.times), " sequential: ", maximum(seq.times))
-	println("total time: parallel: ", sum(para.times) / 1000, "μs", " sequential: ", sum(seq.times) / 1000, "μs")
+	println("average parallel time  : ", match(r"\(([^)]+)\)", string(BenchmarkTools.mean(para))).captures[1])
+	println("average sequential time: ", match(r"\(([^)]+)\)", string(BenchmarkTools.mean(seq))).captures[1])
 	println("total samples: ", length(para.times))
 end
 #Make a 20 of graphs as a testbed
