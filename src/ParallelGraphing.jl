@@ -58,7 +58,7 @@ end
 
 function auto_benchmark(alg)
 	for i in 1:20
-		g = LightGraphs.loadgraph(string("src\\graphs\\graph",i,".lg"), SWGFormat())
+		g = LightGraphs.loadgraph(string("src/graphs/graph",i,".lg"), SWGFormat())
 		println(string("Benchmarking Graph ",i))
 		benchmark(g, alg)
 		println()
@@ -67,7 +67,7 @@ end
 
 function auto_connected_benchmark(alg)
 	for i in 21:30
-		g = LightGraphs.loadgraph(string("src\\graphs\\graph",i,".lg"), SWGFormat())
+		g = LightGraphs.loadgraph(string("src/graphs/graph",i,".lg"), SWGFormat())
 		println(string("Benchmarking Graph ",i))
 		benchmark(g, alg)
 		println()
