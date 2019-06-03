@@ -1,5 +1,8 @@
 # SE751-Assignment
 
+before initializing Julia run the following command in the shell to create n threads at startup
+1. `export JULIA_NUM_THREADS=n`
+
 some simple commands and the order you should probably do them in
 1. `add SE751-Assignment` (from pkg manager)
 1. `using ParallelGraphing`
@@ -28,3 +31,12 @@ Loading a graph
 1. `using LightGraphs`
 1. `using SimpleWeightedGraphs`
 1. `g = LightGraphs.loadgraph("src\\graphs\\ConnectedGraph10.lg", SWGFormat())` (or other name)
+
+Functions Currently Supported
+1. `prims_sequential(graph)`
+1. `prims_parallel(graph)`
+1. `dijkstra_all_sources_sequential(graph)`
+1. `dijkstra_all_sources_parallel(graph)`
+1. `bfs_sequential(graph,source_node)`
+1. `bfs_parallel(graph,source_node)`
+1. `plot(graph)`
