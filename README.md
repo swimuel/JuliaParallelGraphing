@@ -4,10 +4,24 @@ before initializing Julia run the following command in the shell to create n thr
 1. `export JULIA_NUM_THREADS=n`
 
 installation into Julia from github
+1. Open Julia command line
 1. Enter the pkg browser by pressing [
 1. `add https://github.com/hybrio/SE751-Assignment.git`
 1. Exit out of the pkg browser
 1. `using ParallelGraphing`
+
+Functions Currently Supported
+1. `make_simple_weighted_graph(size)` - makes a graph of the given size
+1. `prims_sequential(graph)` 
+1. `prims_parallel(graph)`
+1. `dijkstra_all_sources_sequential(graph)`
+1. `dijkstra_all_sources_parallel(graph)`
+1. `bfs_sequential(graph,source_node)`
+1. `bfs_parallel(graph,source_node)`
+1. `plot(graph)` - plots graph to allow visual inspection for correctness.
+1. `benchmark(graph, algorithm)` - uses the benchmarking suit to run a given algorithm on a given graph where algorithm is an integer (1 for Prim's, 2 for Dijkstra and 3 for BFS)
+1. `auto_benchmark(algorithm)` - benchmarks a given algorithm on the provided set of sparsely connected graphs.
+1. `auto_connected_benchmark(algorithm)` - benchmarks a given algorithm on the provided set of densely connected graphs.
 
 some simple commands and the order you should probably do them in
 1. `add SE751-Assignment` (from pkg manager)
@@ -36,13 +50,5 @@ Adding a package
 Loading a graph
 1. `using LightGraphs`
 1. `using SimpleWeightedGraphs`
-1. `g = LightGraphs.loadgraph("src\\graphs\\ConnectedGraph10.lg", SWGFormat())` (or other name)
+1. `g = LightGraphs.loadgraph("src/graphs/ConnectedGraph10.lg", SWGFormat())` (or other name)
 
-Functions Currently Supported
-1. `prims_sequential(graph)`
-1. `prims_parallel(graph)`
-1. `dijkstra_all_sources_sequential(graph)`
-1. `dijkstra_all_sources_parallel(graph)`
-1. `bfs_sequential(graph,source_node)`
-1. `bfs_parallel(graph,source_node)`
-1. `plot(graph)`
