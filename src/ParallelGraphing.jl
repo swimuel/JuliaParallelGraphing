@@ -29,7 +29,8 @@ include("Prims.jl")
 export bfs_parallel, bfs_sequential,
 	prims_sequential, prims_parallel, prims_priority_queue_sequential,
 	dijkstra_all_sources_sequential, dijkstra_all_sources_parallel,
-	plot, benchmark, make_simple_weighted_graph
+	benchmark, auto_benchmark, auto_connected_benchmark,
+	plot,  make_simple_weighted_graph
 
 
 #=helper function to create a SimpleWeightedGraph, graph is randomly made.
