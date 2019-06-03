@@ -3,12 +3,18 @@
 before initializing Julia run the following command in the shell to create n threads at startup
 1. `export JULIA_NUM_THREADS=n`
 
+installation into Julia from github
+1. Enter the pkg browser by pressing [
+1. `add https://github.com/hybrio/SE751-Assignment.git`
+1. Exit out of the pkg browser
+1. `using ParallelGraphing`
+
 some simple commands and the order you should probably do them in
 1. `add SE751-Assignment` (from pkg manager)
 1. `using ParallelGraphing`
 1. `g = ParallelGraphing.make_simple_weighted_graph(20)` (or whatever size you want)
 1. `ParallelGraphing.plot(g)` displays that graph
-1. `ParallelGraphing.benchmark(g)` benchmarks that graph (still under construction
+1. `ParallelGraphing.benchmark(g)` benchmarks that graph (still under construction)
 
 
 
