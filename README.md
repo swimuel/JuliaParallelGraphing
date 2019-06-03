@@ -20,8 +20,10 @@ Functions Currently Supported
 1. `bfs_parallel(graph,source_node)`
 1. `plot(graph)` - plots graph to allow visual inspection for correctness.
 1. `benchmark(graph, algorithm)` - uses the benchmarking suit to run a given algorithm on a given graph where algorithm is an integer (1 for Prim's, 2 for Dijkstra and 3 for BFS)
-1. `auto_benchmark(algorithm)` - benchmarks a given algorithm on the provided set of sparsely connected graphs.
-1. `auto_connected_benchmark(algorithm)` - benchmarks a given algorithm on the provided set of densely connected graphs.
+1. `auto_benchmark(algorithm)` - benchmarks a given algorithm on the provided set of sparsely connected graphs.*
+1. `auto_connected_benchmark(algorithm)` - benchmarks a given algorithm on the provided set of densely connected graphs.*
+
+*note to run auto benchmarking Julia needs to be running from the SE751-Assignment file location.
 
 some simple commands and the order you should probably do them in
 1. `add SE751-Assignment` (from pkg manager)
