@@ -6,7 +6,7 @@ before initializing Julia run the following command in the shell to create n thr
 installation into Julia from github
 1. Open Julia command line
 1. Enter the pkg browser by pressing [
-1. `add https://github.com/swimuel/SE751-Assignment.git`
+1. `add https://github.com/swimuel/SE751-Assignment.git` - as the repo is private you will need to log in to your github account.
 1. Exit out of the pkg browser
 1. `using ParallelGraphing`
 
